@@ -1,44 +1,45 @@
 import React, {useContext, useEffect, useState} from 'react'
-import {SafeAreaView, Text, TouchableOpacity} from 'react-native'
-import {checkUserExpired, doUserLogIn, logOut, Parse} from "../../parse/parse";
+import {SafeAreaView, StyleSheet, Text, TouchableOpacity} from 'react-native'
+import {checkUserExpired, doUserLogIn, getCurrentUser, logOut, Parse} from "../../parse/parse";
 import {NavigationProp, useNavigation} from "@react-navigation/native";
 import {RootStackParamList} from "../../navigation/RootStack";
 import {AuthContext} from "../../context/AuthContext";
 import {useAsyncStorage} from "@react-native-async-storage/async-storage";
+import {ColorsType} from "../../context/colors";
+import {logoutUser} from "../../strapiServices/services";
 
 export const HomeScreen = () => {
 
-	const {isAuth, setIsAuth, isExpired, setIsExpired} = useContext(AuthContext);
+	const {isAuth, setIsAuth, colors} = useContext(AuthContext);
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>()
+	const styles = getStyles(colors)
 
-	useEffect(() => {
 
-		try {
-			checkUserExpired().then((isExp) => {
 
-				if (isExp !== null && isExp !== undefined) {
-					setIsExpired(isExp)
-					console.log("is Exp",isExp)
-				}
-			})
-		} catch (error) {
-			console.error((error as Error).message);
-		}
-	}, [isExpired]);
 
-	const logoutHandler = () => {
-		logOut().then(() => {
-			setIsAuth(false)
-		})
-	}
-
-	if (isExpired) return <SafeAreaView><Text>Ваше время закончилось</Text></SafeAreaView>
 
 	return (
-		<SafeAreaView style={{flex: 1, backgroundColor: "#3c3c3c", paddingTop: 20}}>
-			<Text style={{color: "#e2e2e2"}}>HomeScreen</Text>
-			<TouchableOpacity onPress={logoutHandler}><Text style={{color: "#e2e2e2"}}>Выйти</Text></TouchableOpacity>
-			<TouchableOpacity style={{marginTop: 30}} onPress={() =>navigation.navigate("Details")}><Text style={{color: "#e2e2e2"}}>Детали</Text></TouchableOpacity>
+		<SafeAreaView style={styles.container}>
+			<Text style={{color: colors.text, fontSize: 18, marginBottom: 20}}>Главная страница</Text>
+
+			<TouchableOpacity style={{marginTop: 30}} onPress={() =>navigation.navigate("Details")}><Text style={styles.text}>Детали</Text></TouchableOpacity>
 		</SafeAreaView>
 	);
+}
+
+const getStyles = (colors: ColorsType) => {
+	return (
+		StyleSheet.create({
+			container: {
+				flex: 1,
+				paddingHorizontal: 24,
+				backgroundColor: colors.background,
+				paddingTop: 20
+			},
+			text: {
+				fontSize: 16,
+				color: colors.text
+			}
+		})
+	)
 }

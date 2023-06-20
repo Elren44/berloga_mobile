@@ -55,15 +55,24 @@ export const logOut = async () => {
 export const checkUserExpired = async  () => {
 	const currentUser = await Parse.User.currentAsync();
 	if (currentUser) {
-		console.log("currentUser ", currentUser)
+		// console.log("currentUser ", currentUser)
 
 		const date = currentUser.get("expiredAt")
-		console.log(Date.now() - Date.parse(date))
-		console.log(Date.now())
+		// console.log(Date.now() - Date.parse(date))
+		// console.log(Date.now())
 		const isExp = (Date.now() - Date.parse(date)) > 0
-		console.log(isExp)
+		// console.log(isExp)
 		return isExp
-
-
 	}
+}
+
+export const readCourses = async (setCourses) => {
+	const parseQuery = new Parse.Query('Courses');
+
+	let queryResult = await parseQuery.findAll();
+		// Be aware that empty or invalid queries return as an empty array
+		// Set results to state variable
+		// setReadResults(todos);
+		setCourses(queryResult)
+		return true;
 }

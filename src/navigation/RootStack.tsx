@@ -11,15 +11,7 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
 export const RootStack = () => {
-	// const [isAuth, setIsAuth] = useState(false)
-	//
-	// const checkAuth = async () => {
-	// 	let loggedIn = await isLoggedIn();
-	// 	setIsAuth(loggedIn)
-	// }
-	// useEffect(() => {
-	// 	checkAuth()
-	// }, []);
+
 	return (
 		<Stack.Navigator initialRouteName={"Home"}>
 			<Stack.Screen name={"Home"} component={HomeScreen}

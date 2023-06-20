@@ -1,28 +1,28 @@
 import {createContext, FC, PropsWithChildren, useState} from "react";
+import {colors, ColorsType} from "./colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type AuthContextProps = {
 	isAuth: boolean;
 	setIsAuth: (isAuth: boolean) => void;
-	isExpired: boolean;
-	setIsExpired: (isExpited:boolean) => void
+	colors: ColorsType
 }
+
+AsyncStorage
 
 export const AuthContext = createContext<AuthContextProps>({
 	isAuth: false,
 	setIsAuth: ()=> {},
-	isExpired: true,
-	setIsExpired: ()=> {}
+	colors: colors
 })
 
 export const AuthContextProvider: FC<PropsWithChildren> = ({children}) => {
 	const [isAuth, setIsAuth] = useState(false)
-	const [isExpired, setIsExpired] = useState(true)
 
 	const defaultValue = {
 		isAuth,
 		setIsAuth,
-		isExpired,
-		setIsExpired
+		colors
 	}
 	return (
 		<AuthContext.Provider value={defaultValue}>

@@ -1,27 +1,42 @@
-import React, {useContext, useEffect, useState} from 'react'
-import {SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native'
+import React, {useContext, useEffect} from 'react'
+import {Pressable, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native'
 import {DismissKeyboard} from "../../components/DismissKeyboard";
-import {doUserLogIn} from "../../parse/parse";
-import {NavigationProp, useNavigation} from "@react-navigation/native";
-import {RootStack, RootStackParamList} from "../../navigation/RootStack";
 import {AuthContext} from "../../context/AuthContext";
+import {ColorsType} from "../../context/colors";
+import {NavigationProp, useNavigation} from "@react-navigation/native";
+import {AuthStackParamList} from "../../navigation/AuthStack";
+import {strapiLogin} from "../../strapiServices/services";
 
 export const LoginScreen = () => {
 	const [username, onChangeUsername] = React.useState('');
 	const [password, onChangePassword] = React.useState('');
-	const {isAuth, setIsAuth} = useContext(AuthContext);
-
-	const loginHandler = async () => {
-		try {
-			doUserLogIn(username, password).then((user) => {
-				if (user) {
-					setIsAuth(true)
-				}
-			})
-		} catch (error) {
-			console.error((error as Error).message);
-		}
+	const [errorText, setErrorText] = React.useState("")
+	const {colors, setIsAuth,} = useContext(AuthContext);
+	const navigation = useNavigation<NavigationProp<AuthStackParamList>>()
+	const styles = getStyles(colors)
+	// const loginHandler = async () => {
+	// 	try {
+	// 		doUserLogIn(username, password).then((user) => {
+	// 			if (user) {
+	// 				setIsAuth(true)
+	// 			}
+	// 		})
+	// 	} catch (error) {
+	// 		console.error((error as Error).message);
+	// 	}
+	// }
+	const loginHandler = () => {
+		strapiLogin(username, password, setErrorText).then((isDone) => {
+			setIsAuth(isDone)
+		})
+		// onChangeUsername("")
+		// onChangePassword("")
 	}
+
+	useEffect(() => {
+		setErrorText("")
+	}, [username, password]);
+
 
 	return (
 		<SafeAreaView style={{flex: 1, backgroundColor: "#3c3c3c"}}>
@@ -30,10 +45,10 @@ export const LoginScreen = () => {
 					<View style={styles.form}>
 						<View style={styles.formRow}>
 							<View style={{marginBottom: 6, alignSelf: "flex-start"}}><Text
-								style={{color: "#e2e2e2"}}>Логин</Text></View>
+								style={{color: colors.text}}>Почта</Text></View>
 
-							<TextInput style={styles.input} placeholder="Введите имя..."
-							           placeholderTextColor="rgba(0,0,0,0.7)"
+							<TextInput style={styles.input} placeholder="Введите почту..."
+							           placeholderTextColor={colors.textAccentOp}
 							           onChangeText={onChangeUsername}
 							           value={username}
 							/>
@@ -41,17 +56,29 @@ export const LoginScreen = () => {
 						</View>
 						<View style={styles.formRow}>
 							<View style={{marginBottom: 6, alignSelf: "flex-start"}}><Text
-								style={{color: "#e2e2e2"}}>Пароль</Text></View>
+								style={{color: colors.text}}>Пароль</Text></View>
 							<TextInput style={styles.input} placeholder="Введите пароль..."
-							           placeholderTextColor="rgba(0,0,0,0.7)"
+							           placeholderTextColor={colors.textAccentOp}
 							           onChangeText={onChangePassword}
 							           value={password}
 							/>
 						</View>
-						<TouchableOpacity style={styles.formBtn} onPress={loginHandler}>
-							<Text style={{fontSize: 18, fontWeight: "600"}}>Вход</Text>
-						</TouchableOpacity>
+						<View style={styles.submitRow}>
 
+							<View><Text numberOfLines={2} style={{color: colors.error}}>{errorText}</Text></View>
+							<View style={{position: "relative"}}>
+								<Pressable style={styles.loginBtns} onPress={() => {
+									navigation.navigate("Register")
+								}}>
+									<Text style={styles.loginBtnText}>Регистрация</Text>
+								</Pressable>
+								<TouchableOpacity style={styles.formBtn} onPress={loginHandler}>
+									<Text
+										style={{fontSize: 18, fontWeight: "600", color: colors.textAccent}}>Вход</Text>
+								</TouchableOpacity>
+							</View>
+
+						</View>
 					</View>
 
 				</View>
@@ -61,31 +88,51 @@ export const LoginScreen = () => {
 	);
 }
 
-const styles = StyleSheet.create({
-	formContainer: {
-		flex: 1,
-		alignItems: "center",
-		justifyContent: "center",
-		marginHorizontal: 24
-	},
-	form: {
-		gap: 15,
-	},
-	formRow: {
-		alignItems: "center"
-	},
-	input: {
-		paddingLeft: 15,
-		paddingVertical: 8,
-		paddingRight: 100,
-		backgroundColor: "#e2e2e2",
-		width: "100%"
-	},
-	formBtn: {
-		paddingHorizontal: 20,
-		paddingVertical: 8,
-		backgroundColor: "#d2c390",
-		alignSelf: "center",
-		marginTop: 20
-	}
-})
+
+const getStyles = (colors: ColorsType) => {
+	return (
+		StyleSheet.create({
+			formContainer: {
+				flex: 1,
+				alignItems: "center",
+				justifyContent: "center",
+				marginHorizontal: 24,
+			},
+			form: {
+				gap: 15,
+				width: "80%"
+			},
+			formRow: {
+				alignItems: "center"
+			},
+			input: {
+				paddingLeft: 15,
+				paddingVertical: 8,
+				paddingRight: 100,
+				backgroundColor: colors.text,
+				width: "100%"
+			},
+			submitRow: {
+				alignItems: "center",
+				gap: 20,
+				marginTop: 20
+			},
+			formBtn: {
+				paddingHorizontal: 20,
+				paddingVertical: 8,
+				backgroundColor: colors.accent,
+				alignSelf: "center"
+			},
+			loginBtns: {
+				position: "absolute",
+				top: 10,
+				left: -120,
+			},
+			loginBtnText: {
+				fontSize: 16,
+				fontWeight: "600",
+				color: colors.textOp,
+			}
+		})
+	)
+}

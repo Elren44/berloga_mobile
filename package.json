@@ -6,21 +6,28 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
-    "start": "react-native start",
+    "start": "react-native start -- --reset-cache",
     "test": "jest"
   },
   "dependencies": {
     "@parse/react-native": "^0.0.1-alpha.18",
     "@react-native-async-storage/async-storage": "^1.18.2",
+    "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
     "@types/parse": "^3.0.4",
+    "@types/react-native-vector-icons": "^6.4.13",
+    "axios": "^1.4.0",
     "parse": "^4.1.0",
     "react": "18.2.0",
     "react-native": "0.71.11",
+    "react-native-curved-bottom-bar": "^3.2.6",
     "react-native-get-random-values": "^1.9.0",
     "react-native-safe-area-context": "^4.5.3",
-    "react-native-screens": "^3.21.0"
+    "react-native-screens": "^3.21.0",
+    "react-native-svg": "^13.9.0",
+    "react-native-swipe-gestures": "^1.0.5",
+    "react-native-vector-icons": "^9.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

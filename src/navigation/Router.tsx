@@ -5,41 +5,28 @@ import {RootStack} from "./RootStack";
 import {AuthStack} from "./AuthStack";
 import {AuthContext} from "../context/AuthContext";
 import {Alert, SafeAreaView, Text} from "react-native";
+import {BottomTabBar} from "./BottomTabBar";
+import {getUser} from "../strapiServices/services";
 
 export const Router = () => {
-	const {isAuth, setIsAuth, isExpired, setIsExpired} = useContext(AuthContext)
+	const {isAuth, setIsAuth} = useContext(AuthContext)
 
-	// useEffect(() => {
-	// 	// isLoggedIn()
-	// 	// 	.then((isLogged) => {
-	// 	// 		setIsAuth(isLogged)
-	// 	// 	})
-	// 	// getCurrentUser().then((user) => {
-	// 	// 	if (user !== null) {
-	// 	// 		const date = user.get("expiredAt")
-	// 	// 		console.log(Date.now() - Date.parse(date))
-	// 	// 		console.log(Date.now())
-	// 	// 		console.log(date)
-	// 	// 		setIsExpired( (Date.now() - Date.parse(date)) < 0)
-	// 	// 		// console.log(isExpired)
-	// 	// 	} else {
-	// 	//
-	// 	// 	}
-	// 	// })
-	// 	console.log(isExpired)
-	// 	checkUserExpired().then((isExp) => {
-	// 		if (isExp) {
-	// 			setIsExpired(isExp)
-	// 			console.log(isExp)
-	// 		}
-	// 	})
-	// }, []);
+	useEffect(() => {
+		getUser().then((user) => {
+			console.log(user)
+			if (user && user !== null) {
+				setIsAuth(true)
+			} else {
+				setIsAuth(false)
+			}
+		})
 
-	// if (isExpired) return <SafeAreaView><Text>Ваше время закончилось</Text></SafeAreaView>
+	}, []);
+
 
 	return (
 		<NavigationContainer>
-				{(isAuth) ? <RootStack/> : <AuthStack/>}
+				{(isAuth) ? <BottomTabBar /> : <AuthStack/>}
 		</NavigationContainer>
 	)
 }
