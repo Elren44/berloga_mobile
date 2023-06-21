@@ -10,19 +10,16 @@ import {logoutUser} from "../../strapiServices/services";
 
 export const HomeScreen = () => {
 
-	const {isAuth, setIsAuth, colors} = useContext(AuthContext);
+	const { colors} = useContext(AuthContext);
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>()
 	const styles = getStyles(colors)
-
-
-
 
 
 	return (
 		<SafeAreaView style={styles.container}>
 			<Text style={{color: colors.text, fontSize: 18, marginBottom: 20}}>Главная страница</Text>
 
-			<TouchableOpacity style={{marginTop: 30}} onPress={() =>navigation.navigate("Details")}><Text style={styles.text}>Детали</Text></TouchableOpacity>
+			<TouchableOpacity style={{marginTop: 30}} onPress={() =>navigation.navigate("Profile")}><Text style={styles.text}>Профиль</Text></TouchableOpacity>
 		</SafeAreaView>
 	);
 }

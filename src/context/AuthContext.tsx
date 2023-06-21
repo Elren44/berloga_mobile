@@ -1,32 +1,55 @@
-import {createContext, FC, PropsWithChildren, useState} from "react";
-import {colors, ColorsType} from "./colors";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, {
+  createContext,
+  FC,
+  PropsWithChildren,
+  SetStateAction,
+  useState,
+} from 'react';
+import {colors, ColorsType} from './colors';
+
+export type User = {
+  id: number;
+  username: string;
+  email: string;
+  uuid: string;
+  avatar: Object;
+};
+export type UserData = {
+  jwt: string;
+  user: User;
+};
 
 type AuthContextProps = {
-	isAuth: boolean;
-	setIsAuth: (isAuth: boolean) => void;
-	colors: ColorsType
-}
+  isAuth: boolean;
+  setIsAuth: (isAuth: boolean) => void;
+  colors: ColorsType;
+  userData: UserData | null;
+  setUserData: React.Dispatch<SetStateAction<UserData>> | any;
+};
 
-AsyncStorage
+const defaultValue: AuthContextProps = {
+  isAuth: false,
+  setIsAuth: () => {},
+  colors: colors,
+  userData: null,
+  setUserData: (user: User) => {},
+};
 
-export const AuthContext = createContext<AuthContextProps>({
-	isAuth: false,
-	setIsAuth: ()=> {},
-	colors: colors
-})
+export const AuthContext = createContext<AuthContextProps>(defaultValue);
 
 export const AuthContextProvider: FC<PropsWithChildren> = ({children}) => {
-	const [isAuth, setIsAuth] = useState(false)
+  const [isAuth, setIsAuth] = useState(false);
+  const [userData, setUserData] = useState<UserData | null>(null);
 
-	const defaultValue = {
-		isAuth,
-		setIsAuth,
-		colors
-	}
-	return (
-		<AuthContext.Provider value={defaultValue}>
-			{children}
-		</AuthContext.Provider>
-	)
-}
+  const defaultValue: AuthContextProps = {
+    isAuth: isAuth,
+    setIsAuth: setIsAuth,
+    colors: colors,
+    userData: userData,
+    setUserData: setUserData,
+  };
+
+  return (
+    <AuthContext.Provider value={defaultValue}>{children}</AuthContext.Provider>
+  );
+};

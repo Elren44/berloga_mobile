@@ -1,32 +1,29 @@
-import {useContext, useEffect} from "react";
-import {checkUserExpired, getCurrentUser, isLoggedIn} from "../parse/parse";
-import {NavigationContainer} from "@react-navigation/native";
-import {RootStack} from "./RootStack";
-import {AuthStack} from "./AuthStack";
-import {AuthContext} from "../context/AuthContext";
-import {Alert, SafeAreaView, Text} from "react-native";
-import {BottomTabBar} from "./BottomTabBar";
-import {getUser} from "../strapiServices/services";
+import {useContext, useEffect} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {AuthStack} from './AuthStack';
+import {AuthContext} from 'context/AuthContext';
+import {BottomTabBar} from './BottomTabBar';
+import {getUser} from 'strapiServices/services';
 
 export const Router = () => {
-	const {isAuth, setIsAuth} = useContext(AuthContext)
+  const {isAuth, setIsAuth, setUserData} = useContext(AuthContext);
 
-	useEffect(() => {
-		getUser().then((user) => {
-			console.log(user)
-			if (user && user !== null) {
-				setIsAuth(true)
-			} else {
-				setIsAuth(false)
-			}
-		})
+  useEffect(() => {
+    getUser().then(user => {
+      if (user && user !== null) {
+        // console.log("user!!!!!", user)
+        setIsAuth(true);
+        // setUserData(user)
+      } else {
+        setIsAuth(false);
+      }
+    });
+  }, []);
 
-	}, []);
-
-
-	return (
-		<NavigationContainer>
-				{(isAuth) ? <BottomTabBar /> : <AuthStack/>}
-		</NavigationContainer>
-	)
-}
+  return (
+    <NavigationContainer>
+      {isAuth ? <BottomTabBar /> : <AuthStack />}
+      {/*<BottomTabBar />*/}
+    </NavigationContainer>
+  );
+};

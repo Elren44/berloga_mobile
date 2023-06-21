@@ -4,7 +4,7 @@ import {AuthContext} from "../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {err} from "react-native-svg/lib/typescript/xml";
 import {BASE_URL} from "../config/config";
-import {Alert} from "react-native";
+import {Alert, Platform} from "react-native";
 
 export const strapiRegister = (username, email, password) => {
 	axios
@@ -35,10 +35,10 @@ export const strapiLogin = async (username, password, setErrorText) => {
 		})
 		.then(response => {
 			// Handle success.
-			console.log('Well done!');
-			console.log(response.data)
+			// console.log('Well done!');
+			// console.log(response.data)
 			// console.log('User profile', response.data.user);
-			console.log('User token', response.data.jwt);
+			// console.log('User token', response.data.jwt);
 			setUser(response.data)
 			isDone = true
 		})
@@ -47,8 +47,9 @@ export const strapiLogin = async (username, password, setErrorText) => {
 				setErrorText("Неправильное имя пользователя или пароль")
 			} else {
 				setErrorText(error.response.data.error.message)
+				isDone = false
 			}
-			isDone = false
+
 		})
 	return isDone
 }
@@ -59,10 +60,9 @@ export const strapiGetUser = async (token) => {
 			Authorization: `Bearer ${token}`,
 		},
 	})
-
 }
 
-const _storeUser = async (data) => {
+export const setUser = async (data) => {
 	try {
 		await AsyncStorage.setItem(
 			'user',
@@ -73,7 +73,7 @@ const _storeUser = async (data) => {
 	}
 };
 
-const _retrieveData = async () => {
+export const getUser = async () => {
 	try {
 		const value = await AsyncStorage.getItem('user');
 		if (value !== null) {
@@ -96,20 +96,50 @@ export const logoutUser = async () => {
 }
 
 
-export const getUser = () => {
-	return _retrieveData()
-}
-export const setUser =(data) => {
-	try {
-		 _storeUser(data)
-	} catch (error) {
-		return error
-	}
-}
+// export const getUser = () => {
+// 	return _retrieveData()
+// }
+// export const setUser =(data) => {
+// 	try {
+// 		 _storeUser(data)
+// 	} catch (error) {
+// 		return error
+// 	}
+// }
 
 // ######   Courses
 
 export const getAllCourses = async () => {
 	const url =`${BASE_URL}/courses/`
 	return await axios.get(url)
+}
+
+export const updateAvatar = async (avatar, userData) => {
+	const data = new FormData()
+	data.append('files', {
+		name: avatar.fileName,
+		type: 'image/jpeg',
+		uri: Platform.OS === 'ios' ? avatar.uri.replace('file://', '') : avatar.uri,
+	});
+	data.append("field", "avatar")
+	data.append("ref", "plugin::users-permissions.user")
+	data.append("refId", userData.user.id)
+
+	// await axios.post(`${BASE_URL}/upload`, data, {
+	// 	headers: {
+	// 		Authorization: `Bearer ${userData.jwt}`,
+	// 	}
+	// }).catch((err) => {
+	// 	console.log("update ERR ", err)
+	// })
+	await fetch(`${BASE_URL}/upload`, {method: "POST", headers:{
+			"Authorization": `Bearer ${userData.jwt}`, "Content-Type": "multipart/form-data"
+		}, body: data})
+		.then(() => {
+			strapiGetUser(userData.jwt).then((user) => {
+				console.log(user)
+				// setUser(user.data)
+			})
+		})
+
 }
