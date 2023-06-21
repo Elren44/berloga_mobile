@@ -35,10 +35,6 @@ export const LoginScreen = () => {
     setErrorText('');
   }, [username, password]);
 
-  useEffect(() => {
-    // console.log(isAuth)
-  }, []);
-
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#3c3c3c'}}>
       <DismissKeyboard>

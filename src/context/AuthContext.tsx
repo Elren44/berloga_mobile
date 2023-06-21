@@ -13,6 +13,7 @@ export type User = {
   email: string;
   uuid: string;
   avatar: Object;
+  phone: string;
 };
 export type UserData = {
   jwt: string;
@@ -25,6 +26,8 @@ type AuthContextProps = {
   colors: ColorsType;
   userData: UserData | null;
   setUserData: React.Dispatch<SetStateAction<UserData>> | any;
+  isModalOpen: boolean;
+  setIsModalOpen: React.Dispatch<SetStateAction<boolean>>;
 };
 
 const defaultValue: AuthContextProps = {
@@ -33,6 +36,8 @@ const defaultValue: AuthContextProps = {
   colors: colors,
   userData: null,
   setUserData: (user: User) => {},
+  isModalOpen: false,
+  setIsModalOpen: (isModalOpen: React.SetStateAction<boolean>) => null,
 };
 
 export const AuthContext = createContext<AuthContextProps>(defaultValue);
@@ -40,6 +45,7 @@ export const AuthContext = createContext<AuthContextProps>(defaultValue);
 export const AuthContextProvider: FC<PropsWithChildren> = ({children}) => {
   const [isAuth, setIsAuth] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const defaultValue: AuthContextProps = {
     isAuth: isAuth,
@@ -47,6 +53,8 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({children}) => {
     colors: colors,
     userData: userData,
     setUserData: setUserData,
+    isModalOpen: isModalOpen,
+    setIsModalOpen: setIsModalOpen,
   };
 
   return (

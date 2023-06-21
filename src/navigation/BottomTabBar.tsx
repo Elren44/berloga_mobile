@@ -1,19 +1,20 @@
 import {HomeScreen} from 'screens/HomeScreen/HomeScreen';
 import {ProfileScreen} from 'screens/ProfileScreen/ProfileScreen';
 import React, {useContext, useState} from 'react';
-import {Animated, StyleSheet, TouchableOpacity} from 'react-native';
+import {Animated, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {CurvedBottomBar} from 'react-native-curved-bottom-bar';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ColorsType} from 'context/colors';
 import {AuthContext} from 'context/AuthContext';
 import {useNavigation} from '@react-navigation/native';
 import {AppModal} from 'components/Modal/AppModal';
+import {ProfileStack} from 'navigation/ProfileStack';
 
 export const BottomTabBar = () => {
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const {colors} = useContext(AuthContext);
+  // const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const {colors, isModalOpen, setIsModalOpen} = useContext(AuthContext);
   const styles = getStyles(colors);
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
   const _renderIcon = (routeName: any, selectedTab: any) => {
     let icon = '';
 
@@ -21,7 +22,7 @@ export const BottomTabBar = () => {
       case 'Home':
         icon = 'home-outline';
         break;
-      case 'Profile':
+      case 'ProfileStack':
         icon = 'person-circle-outline';
         break;
     }
@@ -53,42 +54,37 @@ export const BottomTabBar = () => {
   };
 
   return (
-    <>
-      {modalOpen && (
-        <AppModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+    <CurvedBottomBar.Navigator
+      type="DOWN"
+      screenOptions={{headerShown: false}}
+      style={styles.bottomBar}
+      shadowStyle={styles.shawdow}
+      height={50}
+      circleWidth={50}
+      bgColor={colors.background}
+      initialRouteName="Home"
+      borderTopLeftRight
+      renderCircle={({selectedTab, navigate}) => (
+        <Animated.View style={styles.btnCircleUp}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setIsModalOpen(prev => !prev)}>
+            <Ionicons name="apps-sharp" color={colors.background} size={25} />
+          </TouchableOpacity>
+        </Animated.View>
       )}
-      <CurvedBottomBar.Navigator
-        type="DOWN"
-        screenOptions={{headerShown: false}}
-        style={styles.bottomBar}
-        shadowStyle={styles.shawdow}
-        height={50}
-        circleWidth={50}
-        bgColor={colors.background}
-        initialRouteName="Home"
-        borderTopLeftRight
-        renderCircle={({selectedTab, navigate}) => (
-          <Animated.View style={styles.btnCircleUp}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setModalOpen(prev => !prev)}>
-              <Ionicons name="apps-sharp" color={colors.background} size={25} />
-            </TouchableOpacity>
-          </Animated.View>
-        )}
-        tabBar={renderTabBar}>
-        <CurvedBottomBar.Screen
-          name="Home"
-          position="LEFT"
-          component={HomeScreen}
-        />
-        <CurvedBottomBar.Screen
-          name="Profile"
-          component={ProfileScreen}
-          position="RIGHT"
-        />
-      </CurvedBottomBar.Navigator>
-    </>
+      tabBar={renderTabBar}>
+      <CurvedBottomBar.Screen
+        name="Home"
+        position="LEFT"
+        component={HomeScreen}
+      />
+      <CurvedBottomBar.Screen
+        name="ProfileStack"
+        component={ProfileStack}
+        position="RIGHT"
+      />
+    </CurvedBottomBar.Navigator>
   );
 };
 

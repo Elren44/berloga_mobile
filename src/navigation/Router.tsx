@@ -4,6 +4,7 @@ import {AuthStack} from './AuthStack';
 import {AuthContext} from 'context/AuthContext';
 import {BottomTabBar} from './BottomTabBar';
 import {getUser} from 'strapiServices/services';
+import {RootStack} from 'navigation/RootStack';
 
 export const Router = () => {
   const {isAuth, setIsAuth, setUserData} = useContext(AuthContext);

@@ -22,16 +22,19 @@ export const Avatar = ({avatar, setAvatar, userJwt}: AvatarProps) => {
   const {colors, setIsAuth, userData, setUserData} = useContext(AuthContext);
   const [pickedAvatar, setPickedAvatar] = useState<Asset>({});
   const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
+  const [avatarId, setAvatarId] = useState(null);
   const styles = getStyles(colors);
 
   useEffect(() => {
     if (isUpdatingAvatar) {
       setTimeout(() => {
         strapiGetUser(userJwt).then(user => {
-          // console.log("details effect ", user.data.avatar)
-          setAvatar(user.data.avatar.url);
-          setPickedAvatar({});
-
+          console.log('details effect ', user);
+          if (user.data.avatar) {
+            setAvatar(user.data.avatar.url);
+            setAvatarId(user.data.avatar.id);
+          }
+          // setPickedAvatar({});
           setIsUpdatingAvatar(false);
         });
       }, 500);
@@ -39,15 +42,13 @@ export const Avatar = ({avatar, setAvatar, userJwt}: AvatarProps) => {
   }, [isUpdatingAvatar]);
 
   useEffect(() => {
-    if (!isUpdatingAvatar) {
-      if (pickedAvatar.fileName && userData) {
-        updateAvatar(pickedAvatar, userData);
-      }
+    if (!isUpdatingAvatar && pickedAvatar.fileName && userData) {
+      updateAvatar(pickedAvatar, userData, avatarId);
     }
   }, [pickedAvatar]);
 
   const avatarHandler = () => {
-    if (!isUpdatingAvatar) {
+    if (!isUpdatingAvatar && userData) {
       launchImageLibrary({mediaType: 'photo', selectionLimit: 1}, response => {
         if (response.didCancel) {
           console.log('User cancelled image picker');
@@ -56,7 +57,12 @@ export const Avatar = ({avatar, setAvatar, userJwt}: AvatarProps) => {
         } else {
           console.log('Image selected: ', response.assets);
           if (response.assets) {
-            setPickedAvatar(response.assets[0]);
+            const avatarImg = {
+              ...response.assets[0],
+              fileName: `${userData.user.uuid}-avatar.jpg`,
+            };
+            // console.log(avatarImg);
+            setPickedAvatar(avatarImg);
             setIsUpdatingAvatar(true);
           }
         }
